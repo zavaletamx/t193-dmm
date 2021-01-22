@@ -1,108 +1,100 @@
-import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import {
-	Button,
-	Platform,
+	Image,
 	StyleSheet,
 	Text,
 	View,
 } from 'react-native';
 
-//IMPORTAMOS NUESTRO COMPONENTE
-import MiComponente, {
-	ComponenteAF2,
-} from './src/components/MiComponente';
+import { Zocial, Fontisto } from '@expo/vector-icons';
 
-import MiComponenteClass, {
-	MiOtraClase,
-	OtroComponente,
-} from './src/components/MiComponenteClass';
-
-/**
- * Constante para gewnerar espacios
- *
- * Un componente SOLO PUEDE RETORNAR UN ELEMENTO GRAFICO A LA VEZ
- *
- * FORMA 1 [esta no tanto] -> ENGLOBAR TODO EN UN VIEW
- * FORMA 2 [esta si]       -> ENGLOBAR DENTRO DE UN FRAGMENTO
- * <>
- *     _CONTENIDO_
- * </>
- */
-export const Espacios = () => {
+const App = () => {
+	const imagenUrl =
+		'https://firebasestorage.googleapis.com/v0/b/expo-firebase-f29b9.appspot.com/o/images%2FChewSq.jpg?alt=media&token=fcc2aa12-a2be-4c31-bfbd-3cafa1335e2b';
 	return (
 		<>
-			{/** Englobamos en un fragmento */}
-			<View>
-				<Text>{'    '}</Text>
+			<View
+				style={[
+					styles.contenedor,
+					{ backgroundColor: '#134074' },
+				]}
+			>
+				<Image
+					source={{
+						uri: `${imagenUrl}`,
+					}}
+					style={styles.avatar}
+				/>
+
+				<Text style={styles.titulo}>
+					{' '}
+					Profe y Desarrollador de Apps
+				</Text>
+
+				<View style={styles.contenedorH}>
+					<Text
+						style={{
+							width: '50%',
+							textAlign: 'left',
+							fontSize: 14,
+							color: '#EEF4ED',
+						}}
+					>
+						<Zocial name='email' size={14} />
+						{'  '}
+						raul@zavaletazea.dev
+					</Text>
+					<Text
+						style={{
+							width: '50%',
+							textAlign: 'right',
+							fontSize: 14,
+							color: '#EEF4ED',
+						}}
+					>
+						<Fontisto name='phone' size={14} />
+						{'  '}
+						+52 1 (442) 204 83 29
+					</Text>
+				</View>
 			</View>
-			<View>
-				<Text>{'    '}</Text>
-			</View>
-			<View>
-				<Text>{'    '}</Text>
-			</View>
+
+			<View
+				style={[
+					styles.contenedor,
+					{ backgroundColor: '#EEF4ED' },
+				]}
+			></View>
 		</>
 	);
 };
 
-/**
- * Módulo armado con una sección
- */
-export default function App() {
-	return (
-		<View style={styles.container}>
-			{/** Todos los componente de React tienen propiedades, incluso, podemos inventar nuestras
-			 * propias props
-			 * las props puedne ser
-			 * prop = 'Texto Plano'
-			 * props = {let/const/obj/funcion/clase/af}
-			 *
-			 * ESTILOS
-			 * Todas las reglasd e estilos de CSS PEEEEEEERO
-			 * cambiando las convenciones de guion por notación camello
-			 * margin-top ============ marginTop
-			 * background-color ====== backgroundColor
-			 * font-size: ============ fontSize
-			 */}
-			<Text
-				style={{
-					fontSize: 30,
-					backgroundColor: '#000',
-					color: '#fff',
-					padding: 20,
-					width: '100%',
-					/** Si en Android margen inferior de 30 si es iOS nada */
-					marginBottom:
-						Platform.OS === 'android' ? 30 : 0,
-					textAlign: 'center',
-				}}
-			>
-				Hola Mundo
-			</Text>
-			<Button title='Holap' />
-
-			<Espacios />
-
-			<MiComponente />
-			<ComponenteAF2 />
-
-			<Espacios />
-
-			<MiComponenteClass />
-			<MiOtraClase />
-			<OtroComponente />
-
-			<StatusBar style='auto' />
-		</View>
-	);
-}
-
 const styles = StyleSheet.create({
-	container: {
+	contenedor: {
 		flex: 1,
-		backgroundColor: '#fff',
 		alignItems: 'center',
 		justifyContent: 'center',
 	},
+	avatar: {
+		width: 150,
+		height: 150,
+		borderRadius: 150,
+	},
+	titulo: {
+		width: '100%',
+		fontSize: 24,
+		color: '#EEF4ED',
+		padding: 20,
+		textAlign: 'center',
+	},
+	contenedorH: {
+		marginTop: 10,
+		flex: 1,
+		flexDirection: 'row',
+		width: '92%',
+		alignItems: 'center',
+		maxHeight: 30,
+	},
 });
+
+export default App;
