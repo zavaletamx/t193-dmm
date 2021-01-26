@@ -1,100 +1,143 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
-	Image,
-	StyleSheet,
+	Button,
 	Text,
+	TouchableHighlight,
 	View,
 } from 'react-native';
 
-import { Zocial, Fontisto } from '@expo/vector-icons';
-
 const App = () => {
-	const imagenUrl =
-		'https://firebasestorage.googleapis.com/v0/b/expo-firebase-f29b9.appspot.com/o/images%2FChewSq.jpg?alt=media&token=fcc2aa12-a2be-4c31-bfbd-3cafa1335e2b';
+	/** Aqui preparamos la programación del componente */
+
+	/**
+	 * Los hooks son funciones que se enganchan a un momento
+	 * en el ciclo de vida de una screen de React
+	 *
+	 * Hay diversos tipos de hooks
+	 *
+	 * Hook de estado
+	 * useState()
+	 * Permite modificar el contenido de un elemento
+	 * (let, const, obj, arr, Comp) en "tiempo real"
+	 * permitiendo mostrarlo en la UI
+	 *
+	 * const [VALOR, FUNCION(setter)] = useState(VALOR_INICIAL);
+	 */
+	//[sin import] const [contador, setContador] = React.useState(0);
+	const [contador, setContador] = useState(0);
+	const [btnMas, setBtnMas] = useState(false);
+	const [btnMenos, setBtnMenos] = useState(false);
+	/** Si el contador es mayor o igual a 10, no incrementar mas */
+	/** Si el contador es menor o igual a -5, no decrementar mas */
+
+	/**
+	 * Return renderiza la UI, entregando componentes gráficos
+	 */
 	return (
-		<>
+		<View
+			style={{
+				flex: 1,
+				alignItems: 'center',
+				justifyContent: 'center',
+				backgroundColor:
+					contador >= 10 ? '#d9534f' : '#fff',
+			}}
+		>
 			<View
-				style={[
-					styles.contenedor,
-					{ backgroundColor: '#134074' },
-				]}
+				style={{
+					flex: 1,
+					alignItems: 'center',
+					justifyContent: 'center',
+				}}
 			>
-				<Image
-					source={{
-						uri: `${imagenUrl}`,
+				{/** Onpress utuliza una función anónima
+				 * (arrow function)
+				 * para realizar el evento seleccionado
+				 * VDOM
+				 */}
+				{/* <Button
+					title='+'
+					onPress={() => {
+						if (contador >= 10) {
+							setBtnMas(true);
+						} else {
+							setContador(contador + 1);
+							setBtnMas(false);
+						}
 					}}
-					style={styles.avatar}
-				/>
-
-				<Text style={styles.titulo}>
-					{' '}
-					Profe y Desarrollador de Apps
-				</Text>
-
-				<View style={styles.contenedorH}>
+					disabled={btnMas}
+				/> */}
+				<TouchableHighlight
+					onPress={() => {}}
+					style={{
+						backgroundColor: '#0275d8',
+						padding: 40,
+						marginTop: 20,
+						borderRadius: 10,
+					}}
+					onPress={() => {
+						if (contador >= 10) {
+							setBtnMas(true);
+						} else {
+							setContador(contador + 1);
+							setBtnMas(false);
+						}
+					}}
+					disabled={btnMas}
+				>
 					<Text
 						style={{
-							width: '50%',
-							textAlign: 'left',
-							fontSize: 14,
-							color: '#EEF4ED',
+							color: '#fff',
+							fontSize: 70,
 						}}
 					>
-						<Zocial name='email' size={14} />
-						{'  '}
-						raul@zavaletazea.dev
+						+
 					</Text>
-					<Text
-						style={{
-							width: '50%',
-							textAlign: 'right',
-							fontSize: 14,
-							color: '#EEF4ED',
-						}}
-					>
-						<Fontisto name='phone' size={14} />
-						{'  '}
-						+52 1 (442) 204 83 29
-					</Text>
-				</View>
+				</TouchableHighlight>
 			</View>
 
 			<View
-				style={[
-					styles.contenedor,
-					{ backgroundColor: '#EEF4ED' },
-				]}
-			></View>
-		</>
+				style={{
+					flex: 2,
+					alignItems: 'center',
+					justifyContent: 'center',
+				}}
+			>
+				<Text
+					style={{
+						fontSize: 120,
+						fontWeight: '100',
+					}}
+				>
+					{/** Impresión de variable en RN */}
+					{contador}
+				</Text>
+			</View>
+
+			<View
+				style={{
+					flex: 1,
+					alignItems: 'center',
+					justifyContent: 'center',
+				}}
+			>
+				{/* <Button
+					title='-'
+					onPress={() => {
+						if (contador < 9) {
+							setBtnMas(false);
+						}
+						if (contador <= -5) {
+							setBtnMenos(true);
+						} else {
+							setContador(contador - 1);
+						}
+					}}
+					disabled={btnMenos}
+				/> */}
+			</View>
+		</View>
 	);
 };
-
-const styles = StyleSheet.create({
-	contenedor: {
-		flex: 1,
-		alignItems: 'center',
-		justifyContent: 'center',
-	},
-	avatar: {
-		width: 150,
-		height: 150,
-		borderRadius: 150,
-	},
-	titulo: {
-		width: '100%',
-		fontSize: 24,
-		color: '#EEF4ED',
-		padding: 20,
-		textAlign: 'center',
-	},
-	contenedorH: {
-		marginTop: 10,
-		flex: 1,
-		flexDirection: 'row',
-		width: '92%',
-		alignItems: 'center',
-		maxHeight: 30,
-	},
-});
 
 export default App;
