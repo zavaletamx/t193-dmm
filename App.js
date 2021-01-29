@@ -13,6 +13,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 import Login from './src/screens/Login';
 import Inicio from './src/screens/Inicio';
+import Registro from './src/screens/Registro';
 
 //2.1.- Creamos el contenedo de la navegación
 const Stack = createStackNavigator();
@@ -34,6 +35,11 @@ export default function App() {
 				<Stack.Screen
 					name='Inicio'
 					component={Inicio}
+				/>
+
+				<Stack.Screen
+					name='Registro'
+					component={Registro}
 				/>
 			</Stack.Navigator>
 		</NavigationContainer>
