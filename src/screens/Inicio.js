@@ -17,9 +17,8 @@ const Inicio = (props) => {
 				justifyContent: 'center',
 			}}
 		>
-			<Text>En Inicio</Text>
 			<Button
-				title='Al Login'
+				title='Login'
 				onPress={() => {
 					/**
 					 * Accedemos al objeto de popriedades, en la clave
@@ -29,6 +28,13 @@ const Inicio = (props) => {
 					 * enviar la navegación al siguiente elemento
 					 */
 					props.navigation.navigate('Login');
+				}}
+			/>
+
+			<Button
+				title='Registro'
+				onPress={() => {
+					props.navigation.navigate('Registro');
 				}}
 			/>
 		</View>
