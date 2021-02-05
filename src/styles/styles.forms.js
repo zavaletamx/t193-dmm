@@ -39,4 +39,13 @@ export default StyleSheet.create({
 		fontSize: 16,
 		textAlign: 'center',
 	},
+	imgLogin: {
+		width: 200,
+		height: 200,
+		alignSelf: 'center',
+		resizeMode: 'center',
+		marginVertical: 20,
+		backgroundColor: '#585858',
+		borderRadius: 200,
+	},
 });
