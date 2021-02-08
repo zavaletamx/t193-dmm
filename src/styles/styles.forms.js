@@ -46,6 +46,33 @@ export default StyleSheet.create({
 		resizeMode: 'center',
 		marginVertical: 20,
 		backgroundColor: '#585858',
-		borderRadius: 200,
+		borderRadius: 100,
+	},
+	contenedorImgCircular: {
+		width: 200,
+		height: 200,
+		overflow: 'hidden',
+		alignSelf: 'center',
+		borderRadius: 100,
+		marginVertical: 20,
+	},
+	titulo: {
+		textAlign: 'center',
+		alignSelf: 'center',
+		fontSize: 20,
+		fontWeight: '500',
+		marginVertical: 10,
+	},
+	row: {
+		flexDirection: 'row',
+	},
+	col: {
+		flex: 1,
+	},
+	derecha: {
+		marginRight: 5,
+	},
+	izquierda: {
+		marginLeft: 5,
 	},
 });
