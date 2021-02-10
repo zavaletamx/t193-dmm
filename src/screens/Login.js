@@ -67,7 +67,9 @@ const Login = (props) => {
 			setBtnVisible(true);
 			setAiVisible(false);
 			setTiEnabled(true);
-		}, 5000);
+			//Direccionar a Home
+			props.navigation.navigate('Home');
+		}, 1500);
 	};
 
 	const muestraNombre = (nom) => {

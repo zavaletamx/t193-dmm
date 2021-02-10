@@ -14,6 +14,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import Login from './src/screens/Login';
 import Inicio from './src/screens/Inicio';
 import Registro from './src/screens/Registro';
+import { startClock } from 'react-native-reanimated';
+import Home from './src/screens/private/Home';
 
 //2.1.- Creamos el contenedo de la navegación
 const Stack = createStackNavigator();
@@ -40,6 +42,11 @@ export default function App() {
 				<Stack.Screen
 					name='Registro'
 					component={Registro}
+				/>
+
+				<Stack.Screen
+					name='Home'
+					component={Home}
 				/>
 			</Stack.Navigator>
 		</NavigationContainer>
