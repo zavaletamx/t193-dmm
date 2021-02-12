@@ -19,8 +19,8 @@ const Login = (props) => {
 	 * actualizar una versión virtual de una constante por medio d euna función
 	 * const [ _VALOR_ , _FN_MODIFICA_ ] = useState(_VALOR_INICIAL_);
 	 */
-	const [username, setUsername] = useState('');
-	const [password, setPassword] = useState('');
+	const [username, setUsername] = useState('4422048329');
+	const [password, setPassword] = useState('123456');
 	const [btnVisible, setBtnVisible] = useState(true);
 	const [aiVisible, setAiVisible] = useState(false);
 	const [tiEnabled, setTiEnabled] = useState(true);
@@ -69,7 +69,7 @@ const Login = (props) => {
 			setTiEnabled(true);
 			//Direccionar a Home
 			props.navigation.navigate('Home');
-		}, 1500);
+		}, 350);
 	};
 
 	const muestraNombre = (nom) => {
