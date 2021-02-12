@@ -12,6 +12,7 @@ import {
 	TouchableOpacity,
 } from 'react-native';
 import { DrawerActions } from '@react-navigation/core';
+import Sidebar from '../../components/Sidebar';
 
 /**
  * Agregamos una constante para crear nuestra pila de Screen de
@@ -120,10 +121,15 @@ const Home = (props) => {
 
 	return (
 		/** Creamos la estructura de nuestro navigation Drawer */
-		<Drawer.Navigator>
+		<Drawer.Navigator
+			initialRouteName='Inicio'
+			drawerType='front'
+			openByDefault={false}
+			drawerContent={() => <Sidebar {...props} />}
+		>
 			{/** Agregamos cada item del Drawer */}
 			<Drawer.Screen
-				name='Inicio'
+				name='InicioUser'
 				component={Inicio}
 			/>
 
