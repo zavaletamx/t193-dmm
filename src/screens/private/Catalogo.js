@@ -1,9 +1,21 @@
 import { useFocusEffect } from '@react-navigation/core';
-import React, { useEffect } from 'react';
-import { FlatList, Image, Text, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import {
+	FlatList,
+	Image,
+	RefreshControl,
+	Text,
+	View,
+} from 'react-native';
 import Usuario from '../../components/Usuario';
 
 const Catalogo = (props) => {
+	//Estado para controlar la visibilidad del loader para mi FlatList
+	const [rcUsers, setRcUsers] = useState(true);
+
+	//Estado para guardar el arreglo de usuarios
+	const [users, setUSers] = useState([]);
+
 	//Cambiar el titulo de cada sección (Clase 9 11-feb-21)
 	useFocusEffect(() => {
 		props.navigation.dangerouslyGetParent().setOptions({
@@ -54,7 +66,23 @@ const Catalogo = (props) => {
 				'https://reqres.in/api/users?per_page=12'
 			);
 			const json = await response.json();
-			console.log(json.data);
+
+			/**
+			 * Recorrer el arreglo de datos del servicio para
+			 * guardarlos en mi estado por medio de la función
+			 * setUsuarios
+			 */
+			const arrUsuarios = [];
+
+			json.data.map((usuario) => {
+				//Guardar el objeto de usuario dentro
+				//de mi arreglo de usuarios
+				arrUsuarios.push(usuario);
+			});
+
+			//Indicamos que el valor del estado
+			//será el del arreglo
+			setUSers(arrUsuarios);
 		} catch (e) {
 			console.log(e);
 		}
@@ -68,10 +96,27 @@ const Catalogo = (props) => {
 		//Cargamos la lista por medio de una promesa
 		//getUsuariosPromise();
 		//Cargamos la lista por medio de un func async
-		getUsuariosAsync();
+		setTimeout(() => {
+			getUsuariosAsync();
+			setRcUsers(false);
+		}, 1000);
 	}, []);
 
-	return <View style={{ flex: 1 }}></View>;
+	return (
+		<View style={{ flex: 1 }}>
+			<FlatList
+				style={{ margin: 15 }}
+				refreshControl={
+					<RefreshControl refreshing={rcUsers} />
+				}
+				data={users}
+				renderItem={(item) => (
+					<Usuario datosUsuario={item.item} />
+				)}
+				keyExtractor={(item) => item.id.toString()}
+			/>
+		</View>
+	);
 };
 
 export default Catalogo;
