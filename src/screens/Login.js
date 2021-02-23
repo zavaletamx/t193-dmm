@@ -9,6 +9,8 @@ import {
 	TouchableOpacity,
 	View,
 } from 'react-native';
+import firebase from './../database/firebase';
+import getError from './../helpers/errores_es_mx';
 import formStyle from '../styles/styles.forms';
 import { AntDesign } from '@expo/vector-icons';
 
@@ -19,7 +21,9 @@ const Login = (props) => {
 	 * actualizar una versión virtual de una constante por medio d euna función
 	 * const [ _VALOR_ , _FN_MODIFICA_ ] = useState(_VALOR_INICIAL_);
 	 */
-	const [username, setUsername] = useState('4422048329');
+	const [username, setUsername] = useState(
+		'raul.zavaletazea@gmail.com'
+	);
 	const [password, setPassword] = useState('123456');
 	const [btnVisible, setBtnVisible] = useState(true);
 	const [aiVisible, setAiVisible] = useState(false);
@@ -30,7 +34,7 @@ const Login = (props) => {
 	 * y revisa si el usuario es 4422048329/raul.zavaletazea@uteq.edu.mx
 	 * y la contraseña: 808080
 	 */
-	const validaLogin = () => {
+	const validaLogin = async () => {
 		/**
 		 * Invocamos una alerta
 		 */
@@ -63,13 +67,47 @@ const Login = (props) => {
 		setAiVisible(true);
 		setTiEnabled(false);
 
-		setTimeout(() => {
-			setBtnVisible(true);
-			setAiVisible(false);
-			setTiEnabled(true);
-			//Direccionar a Home
-			props.navigation.navigate('Home');
-		}, 350);
+		/**
+		 * Preguntar si el usuario / contraseña guardado en el state
+		 * Existe como usuario registrado de Firebase/Auth
+		 */
+		try {
+			const userFirebase = await firebase.auth.signInWithEmailAndPassword(
+				username,
+				password
+			);
+			console.log(userFirebase);
+
+			Alert.alert(
+				'Bienvenido',
+				`Pásale ${userFirebase.user.email}`,
+				[
+					{
+						text: 'Acceder',
+						onPress: () => {
+							setAiVisible(false);
+							setBtnVisible(true);
+							setTiEnabled(true);
+							// Direccionar a Home
+							props.navigation.navigate(
+								'Home'
+							);
+						},
+					},
+				]
+			);
+		} catch (e) {
+			Alert.alert('ERROR', getError(e.code), [
+				{
+					text: 'Volver a intentar',
+					onPress: () => {
+						setAiVisible(false);
+						setBtnVisible(true);
+						setTiEnabled(true);
+					},
+				},
+			]);
+		}
 	};
 
 	const muestraNombre = (nom) => {

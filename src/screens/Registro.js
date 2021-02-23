@@ -10,6 +10,8 @@ import {
 	View,
 } from 'react-native';
 import estilos from './../styles/styles.forms';
+import firebase from '../database/firebase';
+import getError from '../helpers/errores_es_mx';
 
 export default class Registro extends Component {
 	/**
@@ -59,7 +61,7 @@ export default class Registro extends Component {
 		/**
 		 * Función que valida el formluario
 		 */
-		const validaRegistro = () => {
+		const validaRegistro = async () => {
 			if (this.state.nombre.length < 3) {
 				Alert.alert(
 					'ERROR',
@@ -133,6 +135,76 @@ export default class Registro extends Component {
 				aiVisible: true,
 				btnVisible: false,
 			});
+
+			/**
+			 * Creamos un documento en la colección usuarios
+			 */
+			try {
+				/**
+				 * REgistramos un usuario por correo y pass
+				 * en el Servicio de auth de Firebase
+				 */
+				const usuarioFirebase = await firebase.auth.createUserWithEmailAndPassword(
+					this.state.email,
+					this.state.pin
+				);
+
+				/**
+				 * Creamos documento en la
+				 * coleccion ligando el id del usuario en AUTH
+				 */
+				const docUsuario = await firebase.db
+					.collection('usuarios')
+					.add({
+						authId: usuarioFirebase.user.uid,
+						nombre: this.state.nombre,
+						apellido1: this.state.apellido1,
+						apellido2: this.state.apellido2,
+						email: this.state.email,
+					});
+
+				/**
+				 * Enviamos correo de verificación
+				 * al usuario
+				 */
+				await usuarioFirebase.user
+					.sendEmailVerification()
+					.then(() => {
+						Alert.alert(
+							'Registro exitoso',
+							`Gracias por registrar ${this.state.nombre}\nTu ID:\n${docUsuario.id}\nREvisa tu correo electrónico para verificar tu cuenta`,
+							[
+								{
+									text: 'Continuar',
+									onPress: () => {
+										this.setState({
+											aiVisible: false,
+											btnVisible: true,
+										});
+									},
+								},
+							]
+						);
+					});
+			} catch (e) {
+				console.log(e.code);
+				Alert.alert(
+					'ERROR',
+					getError(e.code),
+					[
+						{
+							text: 'Aceptar',
+							onPress: () => {
+								this.setState({
+									aiVisible: false,
+									btnVisible: true,
+								});
+							},
+						},
+					],
+					{ cancelable: false }
+				);
+			}
 		};
 
 		return (
@@ -148,11 +220,9 @@ export default class Registro extends Component {
 						}}
 					/>
 				</View>
-
 				<Text style={estilos.titulo}>
 					Regístrate
 				</Text>
-
 				<TextInput
 					placeholder='*Nombre'
 					keyboardType='default'
@@ -162,7 +232,6 @@ export default class Registro extends Component {
 						this.setState({ nombre: val });
 					}}
 				/>
-
 				<View style={estilos.row}>
 					<View
 						style={[
@@ -202,7 +271,26 @@ export default class Registro extends Component {
 						/>
 					</View>
 				</View>
+				<TextInput
+					placeholder='*Correo electrónico'
+					keyboardType='default'
+					style={estilos.input}
+					value={this.state.email}
+					autoCapitalize='none'
+					onChangeText={(val) => {
+						this.setState({ email: val });
+					}}
+				/>
 
+				<TextInput
+					placeholder='*Pin (6 dígitos)'
+					keyboardType='default'
+					style={estilos.input}
+					value={this.state.pin}
+					onChangeText={(val) => {
+						this.setState({ pin: val });
+					}}
+				/>
 				<ActivityIndicator
 					size='large'
 					color='#000'
@@ -213,7 +301,6 @@ export default class Registro extends Component {
 							: 'none',
 					}}
 				/>
-
 				<View
 					style={{
 						display: this.state.btnVisible
@@ -229,7 +316,6 @@ export default class Registro extends Component {
 						onPress={validaRegistro}
 					/>
 				</View>
-
 				<Button
 					title='¿Ta tienes una cuenta?, inicia sesión aquí'
 					onPress={() => {
