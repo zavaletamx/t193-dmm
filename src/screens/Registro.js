@@ -4,6 +4,8 @@ import {
 	Alert,
 	Button,
 	Image,
+	KeyboardAvoidingView,
+	Platform,
 	ScrollView,
 	Text,
 	TextInput,
@@ -160,7 +162,6 @@ export default class Registro extends Component {
 						nombre: this.state.nombre,
 						apellido1: this.state.apellido1,
 						apellido2: this.state.apellido2,
-						email: this.state.email,
 					});
 
 				/**
@@ -209,121 +210,134 @@ export default class Registro extends Component {
 
 		return (
 			<ScrollView style={estilos.contenedor}>
-				<View style={estilos.contenedorImgCircular}>
-					<Image
-						source={require('./../../assets/images/register.png')}
-						style={{
-							...estilos.imgLogin,
-							backgroundColor: '#000',
-							borderRadius: 0,
-							marginVertical: 0,
+				<KeyboardAvoidingView
+					style={{ flex: 1 }}
+					behavior={
+						Platform.OS === 'ios'
+							? 'padding'
+							: 'height'
+					}
+				>
+					<View
+						style={
+							estilos.contenedorImgCircular
+						}
+					>
+						<Image
+							source={require('./../../assets/images/register.png')}
+							style={{
+								...estilos.imgLogin,
+								backgroundColor: '#000',
+								borderRadius: 0,
+								marginVertical: 0,
+							}}
+						/>
+					</View>
+					<Text style={estilos.titulo}>
+						Regístrate
+					</Text>
+					<TextInput
+						placeholder='*Nombre'
+						keyboardType='default'
+						style={estilos.input}
+						value={this.state.nombre}
+						onChangeText={(val) => {
+							this.setState({ nombre: val });
 						}}
 					/>
-				</View>
-				<Text style={estilos.titulo}>
-					Regístrate
-				</Text>
-				<TextInput
-					placeholder='*Nombre'
-					keyboardType='default'
-					style={estilos.input}
-					value={this.state.nombre}
-					onChangeText={(val) => {
-						this.setState({ nombre: val });
-					}}
-				/>
-				<View style={estilos.row}>
-					<View
-						style={[
-							estilos.col,
-							estilos.derecha,
-						]}
-					>
-						<TextInput
-							placeholder='*Apellido 1'
-							keyboardType='default'
-							style={estilos.input}
-							value={this.state.apellido1}
-							onChangeText={(val) => {
-								this.setState({
-									apellido1: val,
-								});
-							}}
-						/>
-					</View>
+					<View style={estilos.row}>
+						<View
+							style={[
+								estilos.col,
+								estilos.derecha,
+							]}
+						>
+							<TextInput
+								placeholder='*Apellido 1'
+								keyboardType='default'
+								style={estilos.input}
+								value={this.state.apellido1}
+								onChangeText={(val) => {
+									this.setState({
+										apellido1: val,
+									});
+								}}
+							/>
+						</View>
 
-					<View
-						style={[
-							estilos.col,
-							estilos.izquierda,
-						]}
-					>
-						<TextInput
-							placeholder='Apellido 2'
-							keyboardType='default'
-							style={estilos.input}
-							value={this.state.apellido2}
-							onChangeText={(val) => {
-								this.setState({
-									apellido2: val,
-								});
-							}}
-						/>
+						<View
+							style={[
+								estilos.col,
+								estilos.izquierda,
+							]}
+						>
+							<TextInput
+								placeholder='Apellido 2'
+								keyboardType='default'
+								style={estilos.input}
+								value={this.state.apellido2}
+								onChangeText={(val) => {
+									this.setState({
+										apellido2: val,
+									});
+								}}
+							/>
+						</View>
 					</View>
-				</View>
-				<TextInput
-					placeholder='*Correo electrónico'
-					keyboardType='default'
-					style={estilos.input}
-					value={this.state.email}
-					autoCapitalize='none'
-					onChangeText={(val) => {
-						this.setState({ email: val });
-					}}
-				/>
-
-				<TextInput
-					placeholder='*Pin (6 dígitos)'
-					keyboardType='default'
-					style={estilos.input}
-					value={this.state.pin}
-					onChangeText={(val) => {
-						this.setState({ pin: val });
-					}}
-				/>
-				<ActivityIndicator
-					size='large'
-					color='#000'
-					style={{
-						marginVertical: 15,
-						display: this.state.aiVisible
-							? 'flex'
-							: 'none',
-					}}
-				/>
-				<View
-					style={{
-						display: this.state.btnVisible
-							? 'flex'
-							: 'none',
-					}}
-				>
-					<Button
-						title='Registrarse'
-						// onPress={() => {
-						// 	this.validaRegistro(this.state);
-						// }}
-						onPress={validaRegistro}
+					<TextInput
+						placeholder='*Correo electrónico'
+						keyboardType='default'
+						style={estilos.input}
+						value={this.state.email}
+						autoCapitalize='none'
+						onChangeText={(val) => {
+							this.setState({ email: val });
+						}}
 					/>
-				</View>
-				<Button
-					title='¿Ta tienes una cuenta?, inicia sesión aquí'
-					onPress={() => {
-						this.props.navigation.navigate(
-							'Login'
-						);
-					}}
-				/>
+
+					<TextInput
+						placeholder='*Pin (6 dígitos)'
+						keyboardType='default'
+						style={estilos.input}
+						value={this.state.pin}
+						onChangeText={(val) => {
+							this.setState({ pin: val });
+						}}
+					/>
+					<ActivityIndicator
+						size='large'
+						color='#000'
+						style={{
+							marginVertical: 15,
+							display: this.state.aiVisible
+								? 'flex'
+								: 'none',
+						}}
+					/>
+					<View
+						style={{
+							display: this.state.btnVisible
+								? 'flex'
+								: 'none',
+						}}
+					>
+						<Button
+							title='Registrarse'
+							// onPress={() => {
+							// 	this.validaRegistro(this.state);
+							// }}
+							onPress={validaRegistro}
+						/>
+					</View>
+					<Button
+						title='¿Ta tienes una cuenta?, inicia sesión aquí'
+						onPress={() => {
+							this.props.navigation.navigate(
+								'Login'
+							);
+						}}
+					/>
+				</KeyboardAvoidingView>
 			</ScrollView>
 		);
 	}

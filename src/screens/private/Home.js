@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import { DrawerActions } from '@react-navigation/core';
 import Sidebar from '../../components/Sidebar';
-
+import firebase from './../../database/firebase';
 /**
  * Agregamos una constante para crear nuestra pila de Screen de
  * Drawer
@@ -34,7 +34,14 @@ const Home = (props) => {
 				},
 				{
 					text: 'Si, salir',
-					onPress: () => {
+					onPress: async () => {
+						try {
+							/**
+							 * Cerramos sesion localmente y
+							 * en el servidor de firebase
+							 */
+							await firebase.auth.signOut();
+						} catch (e) {}
 						//Eliminar el Stack de
 						//navegación
 						props.navigation.reset({

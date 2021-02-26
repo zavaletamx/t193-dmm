@@ -22,7 +22,7 @@ const Login = (props) => {
 	 * const [ _VALOR_ , _FN_MODIFICA_ ] = useState(_VALOR_INICIAL_);
 	 */
 	const [username, setUsername] = useState(
-		'raul.zavaletazea@gmail.com'
+		'raul.zavaletazea@uteq.edu.mx'
 	);
 	const [password, setPassword] = useState('123456');
 	const [btnVisible, setBtnVisible] = useState(true);
