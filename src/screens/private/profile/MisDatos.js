@@ -1,6 +1,7 @@
 import { useFocusEffect } from '@react-navigation/core';
 import React, { useEffect, useState } from 'react';
 import {
+	Alert,
 	Button,
 	ImageBackground,
 	SafeAreaView,
@@ -13,13 +14,19 @@ import {
 import firebase from './../../../database/firebase';
 import Snackbar from 'react-native-snackbar-component';
 import { FontAwesome5 } from '@expo/vector-icons';
+import ProgressDialog from '../../../components/ProgressDialog';
+import stylesForm from './../../../styles/styles.forms';
+import AppModal from '../../../components/AppModal';
+
 const MisDatos = (props) => {
 	const [snack, setSnack] = useState(false);
+	const [snackUpdate, setSnackUpdate] = useState(false);
 	const [snackValida, setSnackValida] = useState(false);
 	const [usuarioFirebase, setUsuarioFireBase] = useState(
 		{}
 	);
 	const [docUsuario, setDocUsuario] = useState({});
+	const [modal, setModal] = useState(true);
 
 	useFocusEffect(() => {
 		props.navigation
@@ -101,12 +108,37 @@ const MisDatos = (props) => {
 				...snapshot.data(),
 				id: snapshot.id,
 			});
-			console.log(usuarioFirebase);
+			setModal(false);
 		}
 	};
 
 	return (
 		<SafeAreaView style={{ flex: 1 }}>
+			<ProgressDialog mostrar={modal} />
+
+			<AppModal
+				show={true}
+				layerBgColor='#333'
+				layerBgOpacity={0.5}
+				modalBgColor='#fff'
+				modalOpacity={1}
+				modalContent={
+					<View>
+						<Text>Hola en la modal</Text>
+					</View>
+				}
+			/>
+
+			<Snackbar
+				textMessage='Datos actualizados'
+				visible={snackUpdate}
+				backgroundColor='#000'
+				actionText='Entendido'
+				actionHandler={() => {
+					setSnackUpdate(false);
+				}}
+			/>
+
 			<Snackbar
 				textMessage='Cuenta sin validar'
 				visible={snack}
@@ -162,14 +194,97 @@ const MisDatos = (props) => {
 					</ImageBackground>
 				</TouchableOpacity>
 
-				<TextInput value={docUsuario.nombre} />
-				<TextInput value={docUsuario.apellido1} />
-				<TextInput value={docUsuario.apellido2} />
-				<TextInput value={usuarioFirebase.email} />
+				<View style={stylesForm.contenedor}>
+					<TextInput
+						/**
+						 * Sobreescribir un estilo
+						 * desde otro archivo
+						 * para un elemento
+						 */
+						style={{
+							...stylesForm.input,
+							borderColor: '#000',
+							borderWidth: 10,
+						}}
+						value={docUsuario.nombre}
+						onChangeText={(val) =>
+							setDocUsuario({
+								...docUsuario,
+								['nombre']: val,
+							})
+						}
+					/>
+					<TextInput
+						style={stylesForm.input}
+						value={docUsuario.apellido1}
+						onChangeText={(val) =>
+							setDocUsuario({
+								...docUsuario,
+								['apellido1']: val,
+							})
+						}
+					/>
+					<TextInput
+						style={stylesForm.input}
+						value={docUsuario.apellido2}
+						onChangeText={(val) =>
+							setDocUsuario({
+								...docUsuario,
+								['apellido2']: val,
+							})
+						}
+					/>
+					<TextInput
+						style={stylesForm.input}
+						value={usuarioFirebase.email}
+						onChangeText={(val) =>
+							setUsuarioFireBase({
+								...usuarioFirebase,
+								['email']: val,
+							})
+						}
+					/>
+				</View>
 
 				<Button
 					title='Guardar cambios'
-					onPress={() => {}}
+					onPress={async () => {
+						/**
+						 * Existen 2 métodos para actualizar
+						 * en firestore
+						 *
+						 * 1.- Método constructivo (update)
+						 * 2.- Método destructivo  (set)
+						 *
+						 *
+						 * 1.- Método constructivo
+						 */
+						setModal(true);
+						try {
+							const query = await firebase.db
+								.collection('usuarios')
+								.doc(docUsuario.id)
+								.update({
+									nombre:
+										docUsuario.nombre,
+									apellido1:
+										docUsuario.apellido1,
+									apellido2:
+										docUsuario.apellido2,
+								});
+							//2.- user set
+							// .set({
+							// 	nombre:
+							// 		docUsuario.nombre,
+							// });
+
+							setSnackUpdate(true);
+							setModal(false);
+						} catch (e) {
+							console.warn(e.toString());
+							setModal(false);
+						}
+					}}
 				/>
 			</ScrollView>
 		</SafeAreaView>

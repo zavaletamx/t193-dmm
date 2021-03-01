@@ -61,7 +61,7 @@ const Inicio = (props) => {
 				renderItem={(item) => (
 					<Text>{item.item.titulo}</Text>
 				)}
-				key={(item) => item.peliculaId}
+				keyExtractor={(item) => item.peliculaId}
 			/>
 		</View>
 	);

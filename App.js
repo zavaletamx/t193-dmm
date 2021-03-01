@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 /**
  * Para utilizar la navegación de React necesitamos
  * 1.- NavigationContainer (preferentemente uno para toda la App)
@@ -14,13 +14,21 @@ import { createStackNavigator } from '@react-navigation/stack';
 import Login from './src/screens/Login';
 import Inicio from './src/screens/Inicio';
 import Registro from './src/screens/Registro';
-import { startClock } from 'react-native-reanimated';
 import Home from './src/screens/private/Home';
+import { LogBox } from 'react-native';
 
 //2.1.- Creamos el contenedo de la navegación
 const Stack = createStackNavigator();
 
 export default function App() {
+	/**
+	 * Creamos un hook para ocultar el mensaje de warning
+	 * de la librería Snackbar
+	 */
+	useEffect(() => {
+		LogBox.ignoreLogs(['Animated: `useNativeDriver`']);
+	}, []);
+
 	/** Este componente NO RETORNA NINGUNA SCREEN DIRECTAMENTE
 	 * Solo indicar la ruta de navegación de todos los componentes
 	 */
