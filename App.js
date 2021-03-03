@@ -26,7 +26,10 @@ export default function App() {
 	 * de la librería Snackbar
 	 */
 	useEffect(() => {
-		LogBox.ignoreLogs(['Animated: `useNativeDriver`']);
+		LogBox.ignoreLogs([
+			'Animated: `useNativeDriver`',
+			'Setting a timer for a long period of time',
+		]);
 	}, []);
 
 	/** Este componente NO RETORNA NINGUNA SCREEN DIRECTAMENTE

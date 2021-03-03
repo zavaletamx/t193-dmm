@@ -17,6 +17,7 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import ProgressDialog from '../../../components/ProgressDialog';
 import stylesForm from './../../../styles/styles.forms';
 import AppModal from '../../../components/AppModal';
+import * as ImagePicker from 'expo-image-picker';
 
 const MisDatos = (props) => {
 	const [snack, setSnack] = useState(false);
@@ -27,6 +28,7 @@ const MisDatos = (props) => {
 	);
 	const [docUsuario, setDocUsuario] = useState({});
 	const [modal, setModal] = useState(true);
+	const [modalImg, setModalImg] = useState(false);
 
 	useFocusEffect(() => {
 		props.navigation
@@ -112,22 +114,114 @@ const MisDatos = (props) => {
 		}
 	};
 
+	/**
+	 * Función para selecciona una imagen de la
+	 * librería de fotos (Android)
+	 * rollo de camara (Camera Roll iOS)
+	 *
+	 * 1.- importar imagePicker
+	 * 2.- pedir permiso para acceder a las imágenes
+	 * 3.- configurar el tipo multimedia
+	 * 4.- disfrutar de tu imagen
+	 */
+	const tomarImagenGaleria = async () => {
+		/**
+		 * Para usar Hardware del dispositivo es necesario que el
+		 * usuario nos conceda el permiso, de lo contrario no
+		 * podremos continuar
+		 */
+		const {
+			status,
+		} = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+		/**
+		 * Si el usuario me permite acceder a su galeria, intentamos seleccionar
+		 * un elemento multimedia
+		 *
+		 * 1.- Tipo de multimedia (todo, imagen o video)
+		 * 2.- Permitir edición (relación de aspecto)
+		 * 3.- Relación de aspecto específica
+		 * 4.- calidad (0 = chafa, 1 = alta)
+		 */
+		if (status === 'granted') {
+			const imgGaleria = await ImagePicker.launchImageLibraryAsync(
+				{
+					mediaTypes:
+						ImagePicker.MediaTypeOptions.Images,
+					allowsEditing: true,
+					aspect: [16, 9],
+					quality: 1,
+				}
+			);
+
+			console.log(imgGaleria);
+		}
+	};
+
 	return (
 		<SafeAreaView style={{ flex: 1 }}>
-			<ProgressDialog mostrar={modal} />
+			{modal ? (
+				<ProgressDialog mostrar={modal} />
+			) : null}
 
-			<AppModal
-				show={true}
-				layerBgColor='#333'
-				layerBgOpacity={0.5}
-				modalBgColor='#fff'
-				modalOpacity={1}
-				modalContent={
-					<View>
-						<Text>Hola en la modal</Text>
-					</View>
-				}
-			/>
+			{/**
+			 * Solo mostramos la ventana modal de seleccion de
+			 * imagenes si el state es true
+			 */}
+			{modalImg ? (
+				<AppModal
+					show={modalImg}
+					layerBgColor='#333'
+					layerBgOpacity={0.5}
+					modalBgColor='#fff'
+					modalOpacity={1}
+					modalContent={
+						<View>
+							<Text
+								style={{
+									alignSelf: 'center',
+									marginVertical: 10,
+									fontSize: 20,
+									fontWeight: '500',
+								}}
+							>
+								<FontAwesome5
+									name='camera-retro'
+									size={20}
+								/>{' '}
+								Actualizar imagen de perfíl
+							</Text>
+
+							<Button title='Tomar foto' />
+
+							<View
+								style={{
+									marginVertical: 5,
+								}}
+							/>
+
+							<Button
+								title='Galería'
+								onPress={tomarImagenGaleria}
+							/>
+
+							<View
+								style={{
+									marginVertical: 5,
+								}}
+							/>
+
+							<Button
+								title='Cancelar'
+								color='red'
+								onPress={() =>
+									setModalImg(false)
+								}
+							/>
+						</View>
+					}
+				/>
+			) : null}
 
 			<Snackbar
 				textMessage='Datos actualizados'
@@ -159,7 +253,9 @@ const MisDatos = (props) => {
 			/>
 
 			<ScrollView>
-				<TouchableOpacity>
+				<TouchableOpacity
+					onPress={() => setModalImg(true)}
+				>
 					<ImageBackground
 						source={require('./../../../../assets/images/avatar_placeholder.png')}
 						style={{
@@ -237,6 +333,7 @@ const MisDatos = (props) => {
 					<TextInput
 						style={stylesForm.input}
 						value={usuarioFirebase.email}
+						editable={false}
 						onChangeText={(val) =>
 							setUsuarioFireBase({
 								...usuarioFirebase,
