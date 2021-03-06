@@ -18,11 +18,13 @@ import ProgressDialog from '../../../components/ProgressDialog';
 import stylesForm from './../../../styles/styles.forms';
 import AppModal from '../../../components/AppModal';
 import * as ImagePicker from 'expo-image-picker';
+import * as Permissions from 'expo-permissions';
 
 const MisDatos = (props) => {
 	const [snack, setSnack] = useState(false);
 	const [snackUpdate, setSnackUpdate] = useState(false);
 	const [snackValida, setSnackValida] = useState(false);
+	const [errorSnack, setErrorSnack] = useState(false);
 	const [usuarioFirebase, setUsuarioFireBase] = useState(
 		{}
 	);
@@ -149,12 +151,203 @@ const MisDatos = (props) => {
 					mediaTypes:
 						ImagePicker.MediaTypeOptions.Images,
 					allowsEditing: true,
-					aspect: [16, 9],
+					aspect: [4, 4],
 					quality: 1,
 				}
 			);
 
-			console.log(imgGaleria);
+			/**
+			 * Si el usuario NO cancela la acción
+			 */
+			if (!imgGaleria.cancelled) {
+				/**
+				 * Pasamos la url de la imgen al state del usuario
+				 */
+				setDocUsuario({
+					...docUsuario,
+					['avatar']: imgGaleria.uri,
+				});
+
+				/**
+				 * Subir la imagen al storage (almacenamiento)
+				 * de firebase
+				 *
+				 * 1.- Asegurarnos que tenemos storage en nuestra lib
+				 *      de firebase
+				 * 2.- Crear un archivo blob/file para subir a la nube
+				 *
+				 * FIRESTORE
+				 * 3.- actualixar la colección de usuarios para el documento
+				 *      del usuario con sesión iniciada
+				 * e indicarle cual es su nuevo avatar
+				 *
+				 * ESCUCHAR AUDIO DEL VIDEO ACERCA DE HILOS
+				 *
+				 */
+
+				//Cerramos screen modal
+				setModalImg(false);
+
+				//Mostramos modal loader
+				setModal(true);
+
+				/**
+				 * Para subir un archivo a storage es necesario
+				 * generar un file a partir de un blob
+				 * blob ---------- contenido binario de un archivo
+				 * file ---------- representación de un ficher contiene
+				 *                 nombre, tipo, contenido binario
+				 * firebase.storage.put(archivo, config) ---- sube el archivo
+				 */
+
+				//Generamos el contenido binario de nuestra imgen
+				//de la galeria
+				const blob = await (
+					await fetch(imgGaleria.uri)
+				).blob();
+
+				/**
+				 * Creamos un archivo de tipo imagen para
+				 * guardar el contenido blob e indicamos el nombre
+				 * del archivo y sus poropiedades
+				 *
+				 * File ([blob], nombre, propiedades)
+				 */
+				const file = new File(
+					[blob],
+					`${docUsuario.id}.jpg`,
+					{ type: 'image/jpeg' }
+				);
+
+				blob.close();
+
+				//Creamos una referencia a firebase storage
+				//y si necesitamos bavegar entre carpetas
+				//indicamos las rutas de los elementos
+				//hijos
+				/**
+				 * ref() --------- genera una referencia a la raiz
+				 *                  del contenido de storage (bucket)
+				 *
+				 * child() ------- genera una referencia dentro
+				 *                  de la referencia del contenido
+				 */
+				try {
+					setSnack(false);
+					const subida = await firebase.storage
+						.ref()
+						//Navegamos en carpetas
+						.child('images')
+						.child('users')
+						//Crear un archivo en blanco
+						.child(file.name)
+						//Escribe el contenido del archivo
+						.put(file, {
+							contentType: file.type,
+						});
+
+					if (subida.state === 'success') {
+						/**
+						 * Tomar la URL para ver la imagen
+						 */
+						const urlAvatar = await subida.ref.getDownloadURL();
+
+						/**
+						 * Actualizamos los datos del usuario y le agregamos
+						 * la nueva url de su imagen de perfíl
+						 */
+						await firebase.db
+							.collection('usuarios')
+							.doc(docUsuario.id)
+							.update({
+								avatar: urlAvatar,
+							});
+
+						setSnackUpdate(true);
+					} else {
+						setErrorSnack(true);
+					}
+
+					setModal(false);
+				} catch (e) {
+					console.log(e.toString());
+					setModal(false);
+					setErrorSnack(true);
+				}
+			}
+
+			//Si cancela la acción de seleccionar una imagen
+			else {
+				Alert.alert(
+					'ERROR',
+					'Selecciona una imagen de tu galería'
+				);
+			}
+		}
+	};
+
+	/**
+	 * Función para habilitar la camara y tomar una foto
+	 */
+	const tomarFotoCamara = async () => {
+		/**
+		 * Para poder tomar una foto necesitamos que el usuario nos conceda
+		 * dos permisos
+		 * CAMARA
+		 * MEDIA_LIBRARY (Galería, Rollo fotográfico)
+		 */
+		const permisoCamara = await Permissions.askAsync(
+			Permissions.CAMERA
+		);
+
+		const permisoGaleria = await Permissions.askAsync(
+			Permissions.MEDIA_LIBRARY
+		);
+
+		/**
+		 * Si me conceden ambos permisos
+		 * inicializamos la camara
+		 */
+		if (
+			permisoCamara.status === 'granted' &&
+			permisoGaleria.status === 'granted'
+		) {
+			/**
+			 * Mismo proceso que tomar imagen de la galeria
+			 */
+			const imgCamara = await ImagePicker.launchCameraAsync(
+				{
+					mediaTypes:
+						ImagePicker.MediaTypeOptions.Images,
+					allowsEditing: true,
+					aspect: [4, 4],
+					quality: 1,
+				}
+			);
+
+			if (!imgCamara.cancelled) {
+				setDocUsuario({
+					...docUsuario,
+					['avatar']: imgCamara.uri,
+				});
+
+				//blob
+				//file
+				//ref.put()
+				//update_bd
+
+				modalImg(true);
+			}
+
+			//Si cancela la acción de seleccionar una imagen
+			else {
+				Alert.alert(
+					'ERROR',
+					'Toma una foto para continuar'
+				);
+			}
+		} else {
+			//MOSTRAR ERROR FALTAN PERMISOS
 		}
 	};
 
@@ -192,7 +385,10 @@ const MisDatos = (props) => {
 								Actualizar imagen de perfíl
 							</Text>
 
-							<Button title='Tomar foto' />
+							<Button
+								title='Tomar foto'
+								onPress={tomarFotoCamara}
+							/>
 
 							<View
 								style={{
@@ -242,6 +438,7 @@ const MisDatos = (props) => {
 					setSnack(false);
 				}}
 			/>
+
 			<Snackbar
 				textMessage='Cuenta validada'
 				visible={snackValida}
@@ -252,12 +449,35 @@ const MisDatos = (props) => {
 				}}
 			/>
 
+			<Snackbar
+				textMessage='Ocurrió un error'
+				visible={errorSnack}
+				backgroundColor='#dc3545'
+				actionText='Entendido'
+				actionHandler={() => {
+					setSnack(false);
+				}}
+			/>
+
 			<ScrollView>
 				<TouchableOpacity
 					onPress={() => setModalImg(true)}
 				>
 					<ImageBackground
-						source={require('./../../../../assets/images/avatar_placeholder.png')}
+						/**
+						 * Evaluamos si el usuario tiene imagen de perfil en su doc
+						 * de lo contrario, mostramos la imagen defecto
+						 *
+						 * Si el tipo de dato de avatar es 'undefined' no hay imagen
+						 */
+						source={
+							typeof docUsuario.avatar !==
+							'undefined'
+								? //Si hay una imagen en firebase
+								  { uri: docUsuario.avatar }
+								: //Si no hay imgen en firebase
+								  require('./../../../../assets/images/avatar_placeholder.png')
+						}
 						style={{
 							width: 200,
 							height: 200,
