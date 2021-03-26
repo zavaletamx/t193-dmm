@@ -16,6 +16,7 @@ import Inicio from './src/screens/Inicio';
 import Registro from './src/screens/Registro';
 import Home from './src/screens/private/Home';
 import { LogBox } from 'react-native';
+import Grafica from './src/screens/Grafica';
 
 //2.1.- Creamos el contenedo de la navegación
 const Stack = createStackNavigator();
@@ -58,6 +59,11 @@ export default function App() {
 				<Stack.Screen
 					name='Home'
 					component={Home}
+				/>
+
+				<Stack.Screen
+					name='Grafica'
+					component={Grafica}
 				/>
 			</Stack.Navigator>
 		</NavigationContainer>

@@ -5,6 +5,8 @@ import Perfil from './Perfil';
 import Catalogo from './Catalogo';
 import ListaDeseos from './ListaDeseos';
 import Rentas from './Rentas';
+import Geoloc from './Geoloc';
+import Notificaciones from './Notificaciones';
 import { Entypo, AntDesign } from '@expo/vector-icons';
 import {
 	Alert,
@@ -14,6 +16,7 @@ import {
 import { DrawerActions } from '@react-navigation/core';
 import Sidebar from '../../components/Sidebar';
 import firebase from './../../database/firebase';
+
 /**
  * Agregamos una constante para crear nuestra pila de Screen de
  * Drawer
@@ -158,6 +161,16 @@ const Home = (props) => {
 			<Drawer.Screen
 				name='Rentas'
 				component={Rentas}
+			/>
+
+			<Drawer.Screen
+				name='Geoloc'
+				component={Geoloc}
+			/>
+
+			<Drawer.Screen
+				name='Notificaciones'
+				component={Notificaciones}
 			/>
 		</Drawer.Navigator>
 	);

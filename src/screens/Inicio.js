@@ -70,6 +70,13 @@ const Inicio = (props) => {
 				title='Insertar en firestore'
 				onPress={crearUsuarioFS}
 			/>
+
+			<Button
+				title='Grafica HTML vía wev'
+				onPress={() =>
+					props.navigation.navigate('Grafica')
+				}
+			/>
 		</View>
 	);
 };
