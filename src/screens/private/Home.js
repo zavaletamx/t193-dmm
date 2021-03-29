@@ -1,4 +1,8 @@
-import React, { useEffect, useLayoutEffect } from 'react';
+import React, {
+	useEffect,
+	useLayoutEffect,
+	useState,
+} from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import Inicio from './Inicio';
 import Perfil from './Perfil';
@@ -12,6 +16,7 @@ import {
 	Alert,
 	BackHandler,
 	TouchableOpacity,
+	Dimensions,
 } from 'react-native';
 import { DrawerActions } from '@react-navigation/core';
 import Sidebar from '../../components/Sidebar';
@@ -24,6 +29,8 @@ import firebase from './../../database/firebase';
 const Drawer = createDrawerNavigator();
 
 const Home = (props) => {
+	const [drawerType, setDrawerType] = useState('front');
+
 	//Alerta que confirme la acción back
 	const backAction = () => {
 		Alert.alert(
@@ -80,25 +87,31 @@ const Home = (props) => {
 	 * en la ui actual, modificar algun elemento existente del VDOM
 	 */
 	useLayoutEffect(() => {
+		//Si las dimensiones del dispositivo son mayores o iguales
+		//a 720, cambiamos el drawertype a permanent
+		if (Dimensions.get('window').width >= 720) {
+			setDrawerType('permanent');
+		}
 		//Modificamos el header
 		//del Stack
 		props.navigation.setOptions({
-			headerLeft: () => (
-				<TouchableOpacity
-					style={{
-						paddingLeft: 10,
-						paddingRight: 30,
-						paddingVertical: 10,
-					}}
-					onPress={() => {
-						props.navigation.dispatch(
-							DrawerActions.toggleDrawer()
-						);
-					}}
-				>
-					<Entypo name='menu' size={25} />
-				</TouchableOpacity>
-			),
+			headerLeft: () =>
+				Dimensions.get('window').width < 720 ? (
+					<TouchableOpacity
+						style={{
+							paddingLeft: 10,
+							paddingRight: 30,
+							paddingVertical: 10,
+						}}
+						onPress={() => {
+							props.navigation.dispatch(
+								DrawerActions.toggleDrawer()
+							);
+						}}
+					>
+						<Entypo name='menu' size={25} />
+					</TouchableOpacity>
+				) : null,
 			headerRight: () => (
 				<TouchableOpacity
 					style={{
@@ -133,7 +146,7 @@ const Home = (props) => {
 		/** Creamos la estructura de nuestro navigation Drawer */
 		<Drawer.Navigator
 			initialRouteName='Inicio'
-			drawerType='front'
+			drawerType={drawerType}
 			openByDefault={false}
 			drawerContent={() => <Sidebar {...props} />}
 		>

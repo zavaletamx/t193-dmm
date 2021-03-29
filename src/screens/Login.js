@@ -76,7 +76,6 @@ const Login = (props) => {
 				username,
 				password
 			);
-			console.log(userFirebase);
 
 			Alert.alert(
 				'Bienvenido',

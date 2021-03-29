@@ -72,7 +72,7 @@ const Inicio = (props) => {
 			/>
 
 			<Button
-				title='Grafica HTML vía wev'
+				title='Grafica HTML vía web'
 				onPress={() =>
 					props.navigation.navigate('Grafica')
 				}

@@ -27,6 +27,7 @@ import {
 import MapView, {
 	Marker,
 	Callout,
+	PROVIDER_GOOGLE,
 } from 'react-native-maps';
 
 import { MaterialIcons } from '@expo/vector-icons';
@@ -36,6 +37,8 @@ Librerías de ubicación en tiempo real, seguimiento y reverseGeoCode
 (la direccion a partir de una ubicación)
 */
 import * as Location from 'expo-location';
+
+import ProgressDialog from './../../components/ProgressDialog';
 
 /*
 Arreglo de marcadores 
@@ -87,6 +90,7 @@ const Geoloc = (props) => {
 	const [lonUser, setLonUser] = useState(-100.3388087);
 	const [mostrarUbic, setMostrarUbic] = useState(false);
 	const [mapa, setMapa] = useState(null);
+	const [progress, setProgress] = useState(false);
 
 	/**
 	 * Función flecha para determinar la ubicación actual
@@ -111,27 +115,65 @@ const Geoloc = (props) => {
 				);
 
 				/*
+                Conaultamos la direccion del usuario 
+                a partir de sus coordenadas
+
+                Al ser asincrono, es una promesa
+                */
+				Location.reverseGeocodeAsync({
+					latitude: location.coords.latitude,
+					longitude: location.coords.longitude,
+				})
+					.then((address) => {
+						/*
+                        Address siempre es un arreglo
+                        que contiene todas las direcciones
+                        posibles con las coordenadas indicadas en 
+                        el paso anterior, si las coordenadas carecen 
+                        de decimales, es muy probable que address contenga
+                        mas de una dirección
+                        */
+						const direccion = address[0];
+
+						console.log(direccion);
+
+						setDireccionUser(
+							`${direccion.street}, ${direccion.city}\nC.P. ${direccion.postalCode}, ${direccion.subregion}, ${direccion.region}. ${direccion.country}`
+						);
+
+						/*
                 Actualizamos las coordenadas de mi marcador 
                 con la localización
                 */
-				setLatUser(location.coords.latitude);
-				setLonUser(location.coords.longitude);
+						setLatUser(
+							location.coords.latitude
+						);
+						setLonUser(
+							location.coords.longitude
+						);
 
-				//Mostramos el marcador con nuestra ubicación
-				setMostrarUbic(true);
+						//Mostramos el marcador con nuestra ubicación
+						setMostrarUbic(true);
 
-				//Movemos el mapa a nuestra posición
-				mapa.animateToRegion(
-					{
-						latitude: location.coords.latitude,
-						longitude:
-							location.coords.longitude,
-						latitudeDelta: 0.02,
-						longitudeDelta: 0.02,
-					},
-					//Milisegundos que tardara el movimiento de la cámara
-					5000
-				);
+						//Movemos el mapa a nuestra posición
+						mapa.animateToRegion(
+							{
+								latitude:
+									location.coords
+										.latitude,
+								longitude:
+									location.coords
+										.longitude,
+								latitudeDelta: 0.02,
+								longitudeDelta: 0.02,
+							},
+							//Milisegundos que tardara el movimiento de la cámara
+							5000
+						);
+					})
+					.catch((e) =>
+						console.log(e.toString())
+					);
 			} else {
 				Alert.alert(
 					'ERROR',
@@ -145,6 +187,8 @@ const Geoloc = (props) => {
 
 	return (
 		<SafeAreaView style={{ flex: 1 }}>
+			{/* <ProgressDialog /> */}
+
 			<TouchableOpacity
 				onPress={getUbicacion}
 				style={{
@@ -160,9 +204,21 @@ const Geoloc = (props) => {
 					color='#fff'
 				/>
 			</TouchableOpacity>
+			<View
+				style={{
+					flex: 2,
+					alignItems: 'center',
+					justifyContent: 'center',
+				}}
+			>
+				<Text style={{ fontSize: 18 }}>
+					{direccionUser}
+				</Text>
+			</View>
 			<MapView
 				showsUserLocation
 				followsUserLocation
+				provider={PROVIDER_GOOGLE}
 				ref={(map) => setMapa(map)}
 				initialRegion={{
 					latitude: 20.653041,
@@ -170,7 +226,7 @@ const Geoloc = (props) => {
 					latitudeDelta: 0.5,
 					longitudeDelta: 0.5,
 				}}
-				style={{ flex: 11 }}
+				style={{ flex: 9 }}
 			>
 				{marcadores.map((m, index) => (
 					<Marker
