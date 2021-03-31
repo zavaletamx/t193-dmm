@@ -16,13 +16,22 @@
 		},
 		"assetBundlePatterns": ["**/*"],
 		"ios": {
-			"supportsTablet": true
+			"supportsTablet": true,
+			"config": {
+				"googleMapsApiKey": "AIzaSyBhmLLZAYkuEe-HhfWxpw5wgv2qtbRVy5w"
+			}
 		},
 		"android": {
 			"adaptiveIcon": {
 				"foregroundImage": "./assets/adaptive-icon.png",
 				"backgroundColor": "#FFFFFF"
-			}
+			},
+			"config": {
+				"googleMaps": {
+					"apiKey": "AIzaSyBhmLLZAYkuEe-HhfWxpw5wgv2qtbRVy5w"
+				}
+			},
+			"useNextNotificationsApi": true
 		},
 		"web": {
 			"favicon": "./assets/favicon.png"

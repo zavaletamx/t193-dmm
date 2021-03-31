@@ -1,6 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Alert, Platform, Text, View } from 'react-native';
+import {
+	Alert,
+	Button,
+	Platform,
+	Text,
+	TextInput,
+	View,
+} from 'react-native';
 import Constants from 'expo-constants';
+import styles from './../../styles/styles.forms';
 
 /*
 Importamos todos los componentes de la librería Notifications de expo
@@ -23,6 +31,9 @@ Notifications.setNotificationHandler({
 const Notificaciones = (props) => {
 	const [expoPushToken, setExpoPushToken] = useState('');
 	const [notification, setNotification] = useState(false);
+	const [titulo, setTitulo] = useState('');
+	const [mensaje, setMensaje] = useState('');
+	const [token, setToken] = useState('');
 	/*
     Existen diversos tipos de hooks que son funciones que se ejecutan en algún 
     momento particular del ciclo de vida de un componente
@@ -118,6 +129,46 @@ const Notificaciones = (props) => {
 	};
 
 	/*
+    Creamos una AF que nos permita enviar una notificación push 
+    al token indicado
+    */
+	const sendPushNotification = async (token) => {
+		/* empaquetar la info de la 
+        notificación en un objeto 
+        Los parámetros de envío mínimos 
+        de una notificación son:
+        to ------------ Receptor de la notificación
+        sound --------- Si la notificaion emitirá una alerta
+        title --------- Titulo de la notificacion
+        body ---------- Mensaje de la notificacón
+        data ---------- Valores adicionales de la notificación
+        */
+		const messsage = {
+			to: token,
+			sound: 'default',
+			title: titulo,
+			body: mensaje,
+			data: { autor: 'RZZ' },
+		};
+
+		/*
+        Invocamos al servicio
+        */
+		await fetch(
+			'https://exp.host/--/api/v2/push/send',
+			{
+				method: 'POST',
+				headers: {
+					Accept: 'application/json',
+					'Accept-encoding': 'gzip, deflate',
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(messsage),
+			}
+		);
+	};
+
+	/*
     Creamos un efecto  que registre este dispositivo 
     y nos retorne el token del usuario */
 	useEffect(() => {
@@ -141,11 +192,49 @@ const Notificaciones = (props) => {
 	}, []);
 
 	return (
-		<View>
+		<View style={{ margin: 20 }}>
 			<Text>Notificaciones.js</Text>
 			<Text style={{ fontSize: 18 }}>
 				{expoPushToken}
 			</Text>
+
+			<TextInput
+				placeholder='Expo Token'
+				keyboardType='default'
+				style={styles.input}
+				value={token}
+				onChangeText={(val) => {
+					setToken(val);
+				}}
+			/>
+
+			<TextInput
+				placeholder='Titulo'
+				keyboardType='default'
+				style={styles.input}
+				value={titulo}
+				onChangeText={(val) => {
+					setTitulo(val);
+				}}
+			/>
+
+			<TextInput
+				placeholder='Mensaje'
+				keyboardType='default'
+				style={styles.input}
+				value={mensaje}
+				onChangeText={(val) => {
+					setMensaje(val);
+				}}
+			/>
+
+			<Button
+				title='Enviar notificación'
+				onPress={() => {
+					sendPushNotification(token);
+				}}
+				color='black'
+			/>
 		</View>
 	);
 };
