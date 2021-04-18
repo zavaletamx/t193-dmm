@@ -1,6 +1,7 @@
 import React from 'react';
 import { Alert, Button, View } from 'react-native';
 import firebase from './../database/firebase';
+import * as Facebook from 'expo-facebook';
 
 /**
  * Todos los componentes de React son capaces de compartir sus propiedades por medio
@@ -76,6 +77,56 @@ const Inicio = (props) => {
 				onPress={() =>
 					props.navigation.navigate('Grafica')
 				}
+			/>
+
+			<Button
+				title='Facebook Login'
+				onPress={async () => {
+					//ID de la App de facebook
+					const appId = '3933406030086481';
+
+					//Inincializamos el scope de Facebook
+					await Facebook.initializeAsync({
+						appId: appId,
+					});
+
+					//Dependiendo del estado de acceso tendremos un valor de type
+					const {
+						type,
+						token,
+					} = await Facebook.logInWithReadPermissionsAsync(
+						{
+							permissions: [
+								'public_profile',
+								'email',
+							],
+						}
+					);
+
+					if (type === 'success') {
+						await firebase
+							.auth()
+							.setPersistence(
+								firebase.auth.Auth
+									.Persistence.LOCAL
+							); // Set persistent auth state
+
+						// const credential = firebase
+						// 	.auth()
+						// 	.FacebookAuthProvider.credential(
+						// 		token
+						// 	);
+						// const facebookProfileData = await firebase
+						// 	.auth()
+						// 	.signInWithCredential(
+						// 		credential
+						// 	); // Sign in with Facebook credential
+
+						// console.log(
+						// 	facebookProfileData
+						// );
+					}
+				}}
 			/>
 		</View>
 	);
